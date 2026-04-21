@@ -831,9 +831,9 @@ def handle_large_file(_: RequestEntityTooLarge):
     return redirect(url_for("login"))
 
 
-@app.get("/")
-def home():
-    return render_template("home.html", model_cards=MODEL_CARDS, current_user=g.user)
+# @app.get("/")
+# def home():
+#     return render_template("home.html", model_cards=MODEL_CARDS, current_user=g.user)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -1018,8 +1018,12 @@ def health():
     }
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
-@app.route("/")
+@app.get("/")
+
 def home():
-    return render_template("index.html")
+
+    return render_template("home.html", model_cards=MODEL_CARDS, current_user=g.user)
+
+if __name__ == "__main__":
+
+    app.run(host="0.0.0.0", port=10000)
