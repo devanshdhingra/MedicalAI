@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project_short_title }} | Workspace{% endblock %}
+
+{% block content %}
+<main class="page-stack">
+    <section class="workspace-hero glass-card">
+        <div>
+            <p class="eyebrow">Analysis Workspace</p>
+            <h1>{{ project_short_title }} workspace</h1>
+            <p class="lead">
+                The workspace separates chest X-ray screening from cardiac MRI segmentation so every model is used on the input type it was trained for.
+            </p>
+        </div>
+
+        <div class="workspace-meta">
+            <div class="meta-box">
+                <span>User</span>
+                <strong>{{ current_user.display_name }}</strong>
+            </div>
+            <div class="meta-box">
+                <span>Session</span>
+                <strong>{{ now_display }}</strong>
+            </div>
+        </div>
+    </section>
+
+    {% if error_message %}
+    <section class="message message-error">
+        <strong>Upload blocked.</strong>
+        <span>{{ error_message }}</span>
+    </section>
+    {% endif %}
+
+    <section class="workspace-grid">
+        <section class="panel glass-card">
+            <div class="panel-heading">Model selection</div>
+            <div class="model-grid">
+                {% for card in model_cards %}
+                <button
+                    type="button"
+                    class="model-choice {% if selected_model == card.key %}is-selected{% endif %}"
+                    data-model="{{ card.key }}"
+                    data-accept="{{ card.accept_attr }}"
+                    data-formats="{{ card.accepted_formats }}"
+                    data-modality="{{ card.modality }}"
+                    data-guidance="{{ card.input_guidance }}"
+                    data-output="{{ card.output_guidance }}"
+                    data-sample="{{ 'yes' if card.sample_relative else 'no' }}"
+                    style="--accent: {{ card.accent }};"
+                >
+                    <span class="model-badge">{{ card.badge }}</span>
+                    <strong>{{ card.title }}</strong>
+                    <span class="model-summary">{{ card.summary }}</span>
+                    <small>{{ card.modality }} - {{ card.analysis_type }}</small>
+                </button>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="panel glass-card upload-panel">
+            <div class="panel-heading">Upload and run</div>
+
+            <div class="requirements-card" id="requirementsCard">
+                <div id="initialCardData"
+                     data-model="{{ selected_card.key }}"
+                     data-accept="{{ selected_card.accept_attr }}"
+                     data-formats="{{ selected_card.accepted_formats }}"
+                     data-modality="{{ selected_card.modality }}"
+                     data-guidance="{{ selected_card.input_guidance }}"
+                     data-output="{{ selected_card.output_guidance }}"
+                     data-sample="{{ 'yes' if selected_card.sample_relative else 'no' }}"></div>
+                <div class="info-pair">
+                    <span>Required modality</span>
+                    <strong id="requirementModality">{{ selected_card.modality }}</strong>
+                </div>
+                <div class="info-pair">
+                    <span>Accepted file type</span>
+                    <strong id="requirementFormats">{{ selected_card.accepted_formats }}</strong>
+                </div>
+                <p id="requirementGuidance">{{ selected_card.input_guidance }}</p>
+                <p class="output-guidance" id="outputGuidance">{{ selected_card.output_guidance }}</p>
+            </div>
+
+            <form id="analysisForm" method="POST" action="{{ url_for('analyze') }}" enctype="multipart/form-data" class="analysis-form">
+                <input type="hidden" name="model" id="modelInput" value="{{ selected_model }}">
+
+                <label class="dropzone" for="fileInput" id="dropzone">
+                    <input id="fileInput" type="file" name="file" required>
+                    <span class="dropzone-kicker" id="dropzoneKicker">Upload the required study</span>
+                    <strong id="filePrompt">Choose the correct file for the selected model</strong>
+                    <span id="fileMeta">The accepted file type changes automatically when you switch between X-ray and MRI workflows.</span>
+                </label>
+
+                <div class="preview-shell is-empty" id="previewShell">
+                    <img id="previewImage" alt="Selected image preview">
+                    <div class="preview-placeholder" id="previewPlaceholder">
+                        <span>Preview area</span>
+                        <p id="previewHint">Chest X-ray images will preview here. MRI NIfTI uploads are validated server-side and previewed after analysis.</p>
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <button type="submit" class="button button-primary" id="submitButton">Run Analysis</button>
+                </div>
+            </form>
+
+            <form id="sampleForm" method="POST" action="{% if selected_card.sample_relative %}{{ url_for('run_sample', model_key=selected_card.key) }}{% else %}#{% endif %}">
+                <input type="hidden" name="model" id="sampleModelInput" value="{{ selected_model }}">
+                {% if selected_card.sample_relative %}
+                <button type="submit" class="button button-secondary" id="sampleButton">Use Sample {{ selected_card.badge }}</button>
+                {% else %}
+                <button type="button" class="button button-secondary is-disabled" id="sampleButton" disabled>No Built-in Sample</button>
+                {% endif %}
+            </form>
+        </section>
+    </section>
+
+    <section class="results-layout">
+        <section class="results-column">
+            {% if result %}
+            <section class="panel glass-card">
+                <div class="panel-heading">Latest result</div>
+                <div class="verdict-chip {{ result.status_class }}">{{ result.verdict }}</div>
+
+                <div class="score-cluster">
+                    <span class="score-label">{{ result.score_label }}</span>
+                    <strong>{{ result.score_display }}</strong>
+                </div>
+
+                <div class="meter">
+                    <div class="meter-fill {{ result.status_class }}" style="width: {{ result.meter_value }}%;"></div>
+                </div>
+
+                <p class="result-summary">{{ result.summary }}</p>
+
+                <div class="result-copy-grid">
+                    <article class="copy-card">
+                        <h3>What this means</h3>
+                        <p>{{ result.plain_meaning }}</p>
+                    </article>
+                    <article class="copy-card">
+                        <h3>Why it matters</h3>
+                        <p>{{ result.clinical_significance }}</p>
+                    </article>
+                </div>
+
+                <div class="detail-list">
+                    {% for detail in result.details %}
+                    <div class="detail-item">
+                        <span>{{ detail.label }}</span>
+                        <strong>{{ detail.value }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <p class="result-note">{{ result.technical_note }}</p>
+
+                {% if active_analysis_id %}
+                <div class="action-row">
+                    <a href="{{ url_for('report_download', analysis_id=active_analysis_id) }}" class="button button-secondary">Download Report</a>
+                    <form method="POST" action="{{ url_for('delete_analysis', analysis_id=active_analysis_id) }}">
+                        <button type="submit" class="button button-secondary danger-button">Delete Analysis</button>
+                    </form>
+                </div>
+                {% endif %}
+            </section>
+
+            <section class="panel glass-card">
+                <div class="panel-heading">Generated output</div>
+                <div class="artifact-grid">
+                    {% for artifact in result.artifacts %}
+                    <figure class="artifact-card">
+                        <img src="{{ url_for('static', filename=artifact.path) }}" alt="{{ artifact.label }}">
+                        <figcaption>{{ artifact.label }}</figcaption>
+                    </figure>
+                    {% endfor %}
+                </div>
+            </section>
+            {% else %}
+            <section class="panel glass-card empty-state">
+                <div class="panel-heading">Ready for analysis</div>
+                <h2>No result loaded yet.</h2>
+                <p>Choose a model, upload the correct study type, and the generated output images will appear here together with a plain-language explanation.</p>
+            </section>
+            {% endif %}
+        </section>
+
+        <aside class="history-column panel glass-card">
+            <div class="history-header">
+                <div class="panel-heading">Recent analyses</div>
+                {% if history %}
+                <form method="POST" action="{{ url_for('clear_history') }}">
+                    <button type="submit" class="history-clear">Clear All</button>
+                </form>
+                {% endif %}
+            </div>
+            {% if history %}
+            <div class="history-list">
+                {% for item in history %}
+                <div class="history-card {% if active_analysis_id == item.id %}is-active{% endif %}">
+                    <div class="history-copy">
+                        <span class="history-model">{{ item.title }}</span>
+                        <strong>{{ item.verdict }}</strong>
+                        <small>{{ item.score_display }} - {{ item.created_at }}</small>
+                    </div>
+                    {% if item.cover_artifact %}
+                    <img src="{{ url_for('static', filename=item.cover_artifact) }}" alt="{{ item.title }}">
+                    {% endif %}
+                    <div class="history-actions">
+                        <a href="{{ url_for('analysis_detail', analysis_id=item.id) }}" class="history-open">Open</a>
+                        <form method="POST" action="{{ url_for('delete_analysis', analysis_id=item.id) }}">
+                            <button type="submit" class="history-delete">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="history-empty">Completed analyses will be saved here after you run the first study.</p>
+            {% endif %}
+        </aside>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project_short_title }} | Login{% endblock %}
+
+{% block content %}
+<main class="page-stack auth-layout">
+    <section class="auth-copy glass-card">
+        <p class="eyebrow">Secure Access</p>
+        <h1>Sign in to the {{ project_short_title }} workspace.</h1>
+        <p class="lead">
+            The protected workspace contains model execution, generated outputs, previous analyses, and exportable
+            report summaries for project review.
+        </p>
+
+        <div class="auth-points">
+            <div class="auth-point">
+                <strong>Protected model access</strong>
+                <p>Only authenticated users can run analyses and open saved records.</p>
+            </div>
+            <div class="auth-point">
+                <strong>Result history</strong>
+                <p>Every completed analysis can be revisited from the workspace history panel.</p>
+            </div>
+            <div class="auth-point">
+                <strong>Report downloads</strong>
+                <p>Each result includes a simple exportable summary for documentation and presentation.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="auth-card glass-card">
+        <div class="panel-heading">Login</div>
+        <form method="POST" class="auth-form">
+            <label>
+                <span>Username</span>
+                <input type="text" name="username" placeholder="Enter username" required>
+            </label>
+
+            <label>
+                <span>Password</span>
+                <input type="password" name="password" placeholder="Enter password" required>
+            </label>
+
+            <button type="submit" class="button button-primary button-full">Sign In</button>
+        </form>
+
+        <p class="auth-note">
+            Use the authorized project credentials to access model execution, saved studies, and downloadable reports.
+        </p>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">MGM project seal</title>
+  <desc id="desc">A warm gold circular emblem used as the project identity mark.</desc>
+  <defs>
+    <radialGradient id="g" cx="50%" cy="42%" r="62%">
+      <stop offset="0%" stop-color="#ffd56b"/>
+      <stop offset="58%" stop-color="#f2ab2b"/>
+      <stop offset="100%" stop-color="#cb6d11"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe9a6"/>
+      <stop offset="100%" stop-color="#9d4d09"/>
+    </linearGradient>
+  </defs>
+  <circle cx="80" cy="80" r="70" fill="url(#g)" stroke="url(#ring)" stroke-width="8"/>
+  <circle cx="80" cy="80" r="54" fill="none" stroke="rgba(255,248,220,0.65)" stroke-width="1.5"/>
+  <text x="80" y="72" text-anchor="middle" font-family="Georgia, serif" font-size="30" font-weight="700" fill="#6e2d00">MGM</text>
+  <text x="80" y="94" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" letter-spacing="3" fill="#6e2d00">COET NOIDA</text>
+  <text x="80" y="112" text-anchor="middle" font-family="Arial, sans-serif" font-size="7.8" letter-spacing="2" fill="#7a3506">FINAL YEAR PROJECT</text>
+</svg>

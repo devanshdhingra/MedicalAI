@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project_full_title }}{% endblock %}
+
+{% block content %}
+<main class="page-stack">
+    <section class="hero hero-home">
+        <div class="hero-copy glass-card">
+            <p class="eyebrow">{{ college_name }}</p>
+            <h1>{{ project_full_title }}</h1>
+            <p class="lead">
+                A final-year project platform that brings together chest X-ray screening and cardiac MRI segmentation
+                in one professional experience, with correct modality handling, model-generated visuals, and
+                plain-language explanations presented alongside every result.
+            </p>
+
+            <div class="hero-actions">
+                {% if current_user %}
+                <a href="{{ url_for('workspace') }}" class="button button-primary">Open Workspace</a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="button button-primary">Secure Login</a>
+                {% endif %}
+                <a href="{{ url_for('home') }}#modalities" class="button button-secondary">Explore Modalities</a>
+            </div>
+
+            <div class="hero-pills">
+                <span class="hero-pill">{{ department_name }}</span>
+                <span class="hero-pill">{{ academic_year }}</span>
+                <span class="hero-pill">Protected analysis workspace</span>
+            </div>
+        </div>
+
+        <aside class="hero-panel glass-card">
+            <div class="metric-card">
+                <span class="metric-label">Supported workflows</span>
+                <strong>3 models</strong>
+                <p>Cardiac detection, pneumonia screening, and atrium segmentation are presented with their proper input modality.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Modalities</span>
+                <strong>X-ray + MRI</strong>
+                <p>The platform separates chest radiograph analysis from cardiac MRI segmentation so the site stays medically coherent.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Output style</span>
+                <strong>Visual + explanatory</strong>
+                <p>Every analysis includes generated output imagery, interpretation guidance, and downloadable report text.</p>
+            </div>
+        </aside>
+    </section>
+
+    <section class="section-intro">
+        <p class="eyebrow">Platform Overview</p>
+        <h2>A showcase-ready site built for faculty review, project defense, and deployment presentation.</h2>
+        <p>
+            Instead of mixing every model behind one generic uploader, the platform now shows which model expects a chest X-ray
+            and which one expects a cardiac MRI volume. That makes the project easier to explain, safer to demonstrate, and much
+            more credible to external reviewers.
+        </p>
+    </section>
+
+    <section class="feature-grid">
+        <article class="feature-card glass-card">
+            <p class="eyebrow">Institution</p>
+            <h3>{{ college_name }}</h3>
+            <p>{{ department_name }}</p>
+        </article>
+
+        <article class="feature-card glass-card">
+            <p class="eyebrow">Academic Guidance</p>
+            <h3>Guide: {{ guide_name }}</h3>
+            <p>Project Coordinator: {{ coordinator_name }}</p>
+        </article>
+
+        <article class="feature-card glass-card">
+            <p class="eyebrow">Cohort</p>
+            <h3>{{ academic_year }}</h3>
+            <p>Built as a final-year deep learning project focused on practical medical imaging workflows and polished deployment presentation.</p>
+        </article>
+    </section>
+
+    <section id="modalities" class="modalities-grid">
+        {% for card in model_cards %}
+        <article class="modality-card glass-card" style="--accent: {{ card.accent }};">
+            <span class="modality-badge">{{ card.badge }}</span>
+            <h3>{{ card.title }}</h3>
+            <p class="modality-summary">{{ card.summary }}</p>
+
+            <div class="info-pair">
+                <span>Modality</span>
+                <strong>{{ card.modality }}</strong>
+            </div>
+            <div class="info-pair">
+                <span>Accepted format</span>
+                <strong>{{ card.accepted_formats }}</strong>
+            </div>
+            <div class="info-pair">
+                <span>Output</span>
+                <strong>{{ card.output_guidance }}</strong>
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+
+    <section class="feature-grid">
+        <article class="feature-card glass-card">
+            <p class="eyebrow">Workflow</p>
+            <h3>Professional analysis flow</h3>
+            <p>Secure login, model selection, validated input rules, visual outputs, result history, and downloadable summaries are all built into the application.</p>
+        </article>
+
+        <article class="feature-card glass-card">
+            <p class="eyebrow">Interpretability</p>
+            <h3>Outputs users can actually understand</h3>
+            <p>Classifiers return heatmaps and segmentation returns an overlay, while the site also explains what those visuals mean in plain non-medical language.</p>
+        </article>
+
+        <article class="feature-card glass-card">
+            <p class="eyebrow">Presentation</p>
+            <h3>Designed for a final deployed experience</h3>
+            <p>The tone, layout, and information hierarchy are positioned like a real imaging platform rather than a notebook wrapper or classroom mock-up.</p>
+        </article>
+    </section>
+
+    <section class="timeline glass-card">
+        <div>
+            <p class="eyebrow">Project Team</p>
+            <h2>Developed by the final-year project team.</h2>
+        </div>
+        <div class="team-grid">
+            {% for member in team_members %}
+            <article class="timeline-step team-card">
+                <strong>{{ member.name }}</strong>
+                <p>{{ member.role }}</p>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="timeline glass-card">
+        <div>
+            <p class="eyebrow">How It Works</p>
+            <h2>From upload to interpretable result.</h2>
+        </div>
+        <div class="timeline-steps">
+            <div class="timeline-step">
+                <strong>1. Select the right model</strong>
+                <p>Each analysis card states the modality, accepted file type, and output style before the user uploads anything.</p>
+            </div>
+            <div class="timeline-step">
+                <strong>2. Run model-specific inference</strong>
+                <p>Chest X-ray studies go through classifier pipelines, while cardiac MRI volumes are converted to slices for segmentation.</p>
+            </div>
+            <div class="timeline-step">
+                <strong>3. Review visual and textual output</strong>
+                <p>The platform returns result imagery, confidence information, significance notes, and a downloadable text report for documentation.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="footer-cta glass-card">
+        <div>
+            <p class="eyebrow">Access</p>
+            <h2>Secure workspace for project review and live demonstration.</h2>
+            <p>The login-protected workspace is where uploads, sample runs, analysis history, and reports are managed for {{ project_short_title }}.</p>
+        </div>
+        {% if current_user %}
+        <a href="{{ url_for('workspace') }}" class="button button-primary">Go To Workspace</a>
+        {% else %}
+        <a href="{{ url_for('login') }}" class="button button-primary">Login To Continue</a>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}
